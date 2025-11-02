@@ -4,6 +4,12 @@ const axios = require('axios');
 const { BOT_TOKEN, AI_API_URL, AI_SYSTEM_PROMPT } = require('./config');
 const { version } = require('./package.json');
 const handler = require('./handler');
+const { URL } = require('url');
+const allowedTikTokHosts = [
+  'tiktok.com',
+ 'www.tiktok.com',
+ 'vt.tiktok.com'
+];
 
 const bot = new TelegramBot(BOT_TOKEN, { polling: true });
 let Start = new Date();
@@ -553,7 +559,15 @@ bot.on('message', async (msg) => {
 
   try {
     if (isStrictTikTokUrl && text === msg.text.trim()) {
-      if (!text.includes('vt.tiktok.com') && !text.includes('tiktok.com')) {
+      let isValidHost = false;
+      try {
+        const parsedUrl = new URL(text);
+        // If host is EXACTLY one of the allowed TikTok hosts
+        isValidHost = allowedTikTokHosts.includes(parsedUrl.host);
+      } catch (parseErr) {
+        isValidHost = false;
+      }
+      if (!isValidHost) {
         await bot.sendMessage(chatId, getMessage(lang, 'invalid_url'), { parse_mode: 'Markdown' });
         logs('warning', 'Invalid TikTok URL', { ChatID: chatId, URL: text });
         return;
