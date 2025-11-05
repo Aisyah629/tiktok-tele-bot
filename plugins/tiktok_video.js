@@ -2,7 +2,7 @@ const sleep = require('../utils/sleep');
 
 async function tiktok_video(bot, msg, data) {
   const From = msg.chat.id;
-  const { title, title_audio, thumbnail, video, audio } = data;
+  const { title, title_audio, video, audio } = data;
 
   const caption = `Title: ${title}\nAudio: ${title_audio}`;
 
